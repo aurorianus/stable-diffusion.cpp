@@ -6,9 +6,9 @@
 #include <regex>
 #include <set>
 
+#include "core/util.h"
 #include "ggml.h"
 #include "tokenize_util.h"
-#include "util.h"
 #include "vocab/vocab.h"
 
 CLIPTokenizer::CLIPTokenizer(int pad_token_id, const std::string& merges_utf8_str) {
@@ -22,9 +22,10 @@ CLIPTokenizer::CLIPTokenizer(int pad_token_id, const std::string& merges_utf8_st
     EOS_TOKEN_ID = 49407;
     PAD_TOKEN_ID = pad_token_id;
 
-    end_of_word_suffix = "</w>";
-    add_bos_token      = true;
-    add_eos_token      = true;
+    end_of_word_suffix     = "</w>";
+    add_bos_token          = true;
+    add_eos_token          = true;
+    normalize_before_split = true;
 
     if (merges_utf8_str.size() > 0) {
         load_from_merges(merges_utf8_str);
@@ -62,7 +63,7 @@ void CLIPTokenizer::load_from_merges(const std::string& merges_utf8_str) {
     }
     vocab.push_back(utf8_to_utf32("<|startoftext|>"));
     vocab.push_back(utf8_to_utf32("<|endoftext|>"));
-    LOG_DEBUG("vocab size: %zu", vocab.size());
+    LOG_VERBOSE("vocab size: %zu", vocab.size());
     int i = 0;
     for (const auto& token : vocab) {
         encoder[token] = i;
